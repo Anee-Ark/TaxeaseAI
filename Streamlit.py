@@ -22,7 +22,7 @@ if "messages" not in st.session_state:
 def get_response(query):
     try:
         # Retrieve relevant documents from Pinecone
-        retrieved_results = query_pinecone(query)
+        retrieved_results = query_pinecone(query)  
 
         # Generate a response using your RAG pipeline
         response = generate_response_with_rag(query, retrieved_results)
@@ -35,7 +35,7 @@ def get_response(query):
 import openai
 
 # Set your OpenAI API key
-openai.api_key = "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"
+openai.api_key = "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"
 
 def generate_embeddings(texts):
     """Generate embeddings using OpenAI's `text-embedding-ada-002`."""
