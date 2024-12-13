@@ -3,6 +3,7 @@ import streamlit as st
 from streamlit_chat import message
 import pinecone
 
+# Initialize Pinecone
 from pinecone import Pinecone
 
 # Initialize the Pinecone client
@@ -29,6 +30,71 @@ def get_response(query):
         return response
     except Exception as e:
         return f"Sorry, an error occurred: {str(e)}"
+
+
+import openai
+
+# Set your OpenAI API key
+openai.api_key = "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"
+
+def generate_embeddings(texts):
+    """Generate embeddings using OpenAI's `text-embedding-ada-002`."""
+    response = openai.Embedding.create(
+        model="text-embedding-ada-002",
+        input=texts
+    )
+    return [data["embedding"] for data in response["data"]]
+
+def query_pinecone(query):
+    """Query Pinecone index with an embedding of the query."""
+    # Step 1: Generate embedding for the query
+    query_embedding = generate_embeddings([query])[0]  # Use the same embedding model as used for indexing
+
+    # Step 2: Query Pinecone
+    results = index.query(
+        namespace="ns1",  # Use the namespace if applicable, otherwise omit
+        vector=query_embedding,  # Provide the query embedding
+        top_k=5,  # Number of top results to retrieve
+        include_metadata=True  # Include metadata in the results
+    )
+
+    # Return the retrieved results
+    return results["matches"]
+
+
+
+def generate_response_with_rag(query, retrieved_results):
+
+    # Introductory context
+
+    introductory_prompt = (
+    "   Hi Taxease, you are an assistant who helps users navigate the tax filing process. "
+        "The chatbot should be able to answer questions, provide guidance on filling out the tax form, "
+        "and offer suggestions for deductions or credits the user may be eligible for. "
+        "The chatbot should use natural language processing to understand user queries and respond in a conversational way. "
+
+    )
+
+    # Retrieved context
+    context = "\n".join([match["metadata"]["completion"] for match in retrieved_results])
+
+    # Combine the introductory prompt, retrieved context, and user query
+    messages = [
+        {"role": "system", "content": introductory_prompt},
+        {"role": "user", "content": f"Context:\n{context}\n\nQuery: {query}\n\nAnswer:"}
+    ]
+
+
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",  # Or "gpt-4" for higher quality
+        messages=messages,
+        max_tokens=300,
+        temperature=0.7
+    )
+
+    return response["choices"][0]["message"]["content"].strip()
+
+
 
 # Title for the chatbot app
 st.title("TaxEase AI Chatbot")
