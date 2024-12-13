@@ -2,12 +2,21 @@ import os
 import streamlit as st
 from streamlit_chat import message
 import pinecone
+from dotenv import load_dotenv
+
+# Load environment variables from the .env file
+load_dotenv()
+
+# Retrieve API keys from the environment
+OPENAI_KEY = os.getenv("OPENAI_KEY")
+PINECONE_KEY = os.getenv("PINECONE_KEY")
+PINECONE_ENVIRONMENT = os.getenv("PINECONE_ENVIRONMENT")
 
 # Initialize Pinecone
 from pinecone import Pinecone
 
 # Initialize the Pinecone client
-pc = Pinecone(api_key="d8f32a14-b0b1-40bf-bbc1-b93f9f8b6c8d")
+pc = Pinecone(api_key="PINECONE_KEY")
 
 # Connect to the "taxease" index
 index = pc.Index("taxease")
@@ -35,7 +44,7 @@ def get_response(query):
 import openai
 
 # Set your OpenAI API key
-openai.api_key = "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"
+openai.api_key = "OPENAI_KEY"
 
 def generate_embeddings(texts):
     """Generate embeddings using OpenAI's `text-embedding-ada-002`."""
