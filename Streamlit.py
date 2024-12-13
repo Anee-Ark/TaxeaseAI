@@ -35,7 +35,7 @@ def get_response(query):
 import openai
 
 # Set your OpenAI API key
-openai.api_key = "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"
+openai.api_key = "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"
 
 def generate_embeddings(texts):
     """Generate embeddings using OpenAI's `text-embedding-ada-002`."""
