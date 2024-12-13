@@ -2,3 +2,4 @@ streamlit
 streamlit-chat
 pinecone-client
 openai==0.28
+python-dotenv
