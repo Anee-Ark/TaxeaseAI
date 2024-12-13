@@ -3,10 +3,13 @@ import streamlit as st
 from streamlit_chat import message
 import pinecone
 
-# Initialize Pinecone
-PINECONE_KEY = st.secrets["Pinecone_Key"]
-pinecone.init(api_key=PINECONE_KEY, environment="us-west1-gcp")  # Replace with your environment
-index = pinecone.Index("taxease")  # Ensure the index exists
+from pinecone import Pinecone
+
+# Initialize the Pinecone client
+pc = Pinecone(api_key="d8f32a14-b0b1-40bf-bbc1-b93f9f8b6c8d")
+
+# Connect to the "taxease" index
+index = pc.Index("taxease")
 
 # Ensure conversation history is persistent
 if "messages" not in st.session_state:
